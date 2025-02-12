@@ -21,7 +21,7 @@ try {
 <html lang="en">
   <head>
    <?php require_once 'partials/__head.inc.php'; ?>
-   <title>User Login | <?php echo SITE_NAME; ?></title>
+   <title>Contact us | <?php echo SITE_NAME; ?></title>
 
   </head>
   <body>
@@ -54,17 +54,18 @@ try {
     $full_name = filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_STRING);
     $subject = filter_input(INPUT_POST, 'subject', FILTER_SANITIZE_STRING);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING);
-     // Further processing, such as storing the sanitized data or sending an email
-    $message = new classes\Message();
-    $message -> sendUsMessage( $full_name, $subject, $email, $message );
+    $message = filter_input(INPUT_POST, 'message', FILTER_UNSAFE_RAW);
+    // Get the user's IP address
+    $ip_address = $_SERVER['REMOTE_ADDR'];
    
-
-
-
+    // Further processing, such as storing the sanitized data or sending an email
+    $messages = new classes\Message();
+    $messages -> sendUsMessage( $full_name, $subject, $email, $message , $ip_address );
+   
   }
 
-
+  $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+  $msg -> display();
 
 
 } catch ( PDOException $e ){
