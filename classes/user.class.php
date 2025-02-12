@@ -370,10 +370,62 @@ public function resetPassword($email, $password, $passwordVerify, $token) {
         $msg->error('Invalid email format.');
     }
 
-    
+
 
 }// resetPassword
 
+public function tokeRequest($email){
+
+    if ($this->validateEmailAddress($email)) {
+        $sql = 'SELECT * FROM users WHERE email = :email';
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(':email', $email);
+        $query->execute();
+        $user = $query->fetch();
+
+        if ($user) {
+            $token = bin2hex(random_bytes(50));
+            $sql = 'UPDATE users SET reset_token = :token, reset_token_expiry = DATE_ADD(NOW(), INTERVAL 30 MINUTE) WHERE email = :email';
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(':token', $token);
+            $query->bindParam(':email', $email);
+            $query->execute();
+
+            try {
+                $mail = new PHPMailer();
+                $mail->isSMTP();
+                $mail->Host = PHPMAILER_HOST;
+                $mail->SMTPAuth = true;
+                $mail->Port = PHPMAILER_PORT;
+                $mail->Username = PHPMAILER_USERNAME;
+                $mail->Password = PHPMAILER_PASSWORD;
+
+                $mail->setFrom(ADMIN_EMAIL, ADMIN_FIRST_NAME . ' ' . ADMIN_LAST_NAME);
+                $mail->addAddress($email);
+
+                $mail->isHTML(true);
+                $mail->Subject = 'Password Reset';
+                $mail->Body = 'Please click on <a href="http://localhost/zadaci/reset-password.php?token=' . $token . '">this link</a> to reset your password.';
+                $mail->AltBody = 'Please click on the following link to reset your password: http://localhost/zadaci/reset-password.php?token=' . $token;
+
+                $mail->send();
+                $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                $msg->success('Password reset email has been sent.');
+            } catch (Exception $e) {
+                $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                $msg->error('Password reset email could not be sent. ' . $mail->ErrorInfo);
+            }
+        } else {
+            $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+            $msg->error('Email does not exist.');
+        }
+    } else {
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error('Invalid email format.');
+    }
+
+
+}// tokenRequest
 
 
 

@@ -48,16 +48,19 @@ try {
             </div>
             <div class="col-xl-6">
               <div class="card-body p-md-5 text-black">
-                <h3 class="mb-5 text-uppercase">Password Reset</h3>
+                <h3 class="mb-5 text-uppercase">New token request</h3>
 <?php
 try {
 
 
-  if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['passwordReset'])) {
+  if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tokenRequest'])) {
+
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $user = new classes\User();
-    $user -> passwordReset($email);
-  }
+    $user -> tokeRequest($email);
+
+
+  }// end of if request method
 
  
   $msg -> display();
@@ -84,7 +87,7 @@ try {
                 <div class="d-flex justify-content-end pt-3">
                   
                   <button  type="submit" data-mdb-button-init data-mdb-ripple-init 
-                  class="btn btn-warning btn-lg ms-2" name="passwordReset">Reset password</button>
+                  class="btn btn-warning btn-lg ms-2" name="tokenRequest">Request token</button>
                 </div>
                 </form>
 
