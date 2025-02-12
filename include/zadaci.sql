@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2025 at 04:04 PM
+-- Generation Time: Feb 12, 2025 at 06:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,23 @@ SET time_zone = "+00:00";
 --
 -- Database: `zadaci`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact_messages`
+--
+
+CREATE TABLE `contact_messages` (
+  `id` int(11) NOT NULL,
+  `full_name` varchar(244) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -60,7 +77,7 @@ CREATE TABLE `users` (
   `postal_code` varchar(10) NOT NULL,
   `address` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
-  `reset_token` varchar(255) NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
   `reset_token_expiry` timestamp NOT NULL DEFAULT current_timestamp(),
   `birth_date` date NOT NULL,
   `is_active` int(11) DEFAULT 0,
@@ -73,13 +90,18 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `first_name`, `last_name`, `password`, `email`, `phone`, `state`, `city`, `postal_code`, `address`, `token`, `birth_date`, `is_active`, `role_id`, `created_at`, `updated_at`) VALUES
-(2, 'milanj82nis', 'Milan', 'Janković', '$2y$10$FTRVSNR9gSw.3jbjGRGZa.usPbsdeG5Px.bNzFSOgBfvMQwundZMy', 'milan82nis@gmail.com', '0629659932', 'Srbija', 'Niš', '18000', 'Gabrovačka reka 78', '1d091b86dee5bad7996cbc322ef744f29bcb7b0f6c829e75d5196cc891ab456ab563a679df7dde22d1ab6f331bca6b58d8a3', '2025-02-11', 0, 1, '2025-02-09 14:57:10', '2025-02-09 15:03:55'),
-(3, 'milanj82nis2', 'Milan', 'Janković', '$2y$10$gu7tixrz2x5AYyrIRiGZtebnQlVB0Dv8UKEdrnTdEMCgjqNec6GRa', 'milanj31@gmail.com', '0628985971', 'Srbija', 'Niš', '18000', 'Branka Miljkovića 8', 'b10b6048627ada3d1aff07c841eb8fb38b4994806f9f50f6b070b157c6b3ad385c7bdc3f271a5f1aed64249a747a74d2c892', '2025-02-11', 0, 3, '2025-02-09 15:03:28', '2025-02-09 15:03:28');
+INSERT INTO `users` (`id`, `username`, `first_name`, `last_name`, `password`, `email`, `phone`, `state`, `city`, `postal_code`, `address`, `token`, `reset_token`, `reset_token_expiry`, `birth_date`, `is_active`, `role_id`, `created_at`, `updated_at`) VALUES
+(4, 'milanj82nis', 'Milan', 'Janković', '$2y$10$KHCMaNZKuUmzq5.hBfLvS.JEsSReabAk2uD1ewYK9zDBG25JoE7fu', 'milan82nis@gmail.com', '0629659932', 'Srbija', 'Niš', '18000', 'Branka Miljkovića 8', '2cc8c38e0779937fc79b41fc610a6490ad0186216f506ab4a9c9e73b894be4f258e864b224ed496b4564fdb4e1af900936de', NULL, '2025-02-12 05:06:15', '1982-05-26', 1, 3, '2025-02-12 04:36:42', '2025-02-12 05:06:15');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `contact_messages`
+--
+ALTER TABLE `contact_messages`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `roles`
@@ -102,6 +124,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `contact_messages`
+--
+ALTER TABLE `contact_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
@@ -111,7 +139,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
