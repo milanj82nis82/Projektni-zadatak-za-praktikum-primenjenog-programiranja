@@ -9,6 +9,14 @@ define ( 'DBNAME', 'zadaci' );
 define ( 'USERNAME', 'root' );
 define ( 'PASSWORD', '' );
 
+/*  SITE SETTINGS
+____________________________*/
+define ( 'SITE_NAME' , 'Radni zadaci' );
+define ( 'SITE_URL' , 'http://localhost/zadaci/' );
+define ( 'SITE_ROOT' , '/zadaci/' );
+define ( 'SITE_LOGO' , 'img/logo.png' );
+
+
 /*  ADMIN SETTINGS 
 ____________________________*/
 define ( 'ADMIN_FIRST_NAME' , 'Milan');

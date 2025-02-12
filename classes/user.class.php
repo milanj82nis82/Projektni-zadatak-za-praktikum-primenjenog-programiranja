@@ -147,8 +147,8 @@ try {
     //Content
     $mail->isHTML(true);                                  //Set email format to HTML
     $mail->Subject = 'User Registration';
-    $mail->Body    = 'Please click on <a href="http://localhost/zadaci/activate.php?'.$token.'">link to activate</a> your account';
-    $mail->AltBody = 'Please click on <a href="http://localhost/zadaci/activate.php?'.$token.'">link to activate</a> your account';
+    $mail->Body    = 'Please click on <a href="http://localhost/zadaci/activate.php?token='.$token.'">link to activate</a> your account';
+    $mail->AltBody = 'Please click on <a href="http://localhost/zadaci/activate.php?token='.$token.'">link to activate</a> your account';
 
     $mail->send();
     $msg = new \Plasticbrain\FlashMessages\FlashMessages();
@@ -159,7 +159,6 @@ try {
     $msg -> success('Message could not be sent ' . $mail->ErrorInfo);
     
 }
-   
 
 
 } else {
@@ -192,16 +191,188 @@ try {
 
 }// submitRegistration
 
+public function userActivation(){
+    $token = $_GET['token'];
+    $sql = 'SELECT * FROM users WHERE token = :token';
+    $query = $this -> connect() -> prepare($sql);
+    $query -> bindParam(':token', $token);
+    $query -> execute();
+    $result = $query -> fetch();
+    
+        $sql = 'update users set is_active = ? where token = ? limit 1 ';
+        $query = $this -> connect() -> prepare($sql);
+        $query -> execute([ 1 , $token ]);
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg -> success('Account activated');
+        header('Refresh:5;URL=login.php');
+  
+}// userActivation
 
 
+public function userLogin( string $email , string $password ){
+
+    if ($this->validateEmailAddress($email)) {
+        $sql = 'SELECT * FROM users WHERE email = :email';
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(':email', $email);
+        $query->execute();
+        $user = $query->fetch();
+
+        if ($user && password_verify($password, $user['password'])) {
+            if ($user['is_active'] == 1) {
+                session_start();
+                $_SESSION['user'] = [
+                    'id' => $user['id'],
+                    'username' => $user['username'],
+                    'email' => $user['email'],
+                    'first_name' => $user['first_name'],
+                    'last_name' => $user['last_name'],
+                    'phone' => $user['phone'],
+                    'state' => $user['state'],
+                    'city' => $user['city'],
+                    'postal_code' => $user['postal_code'],
+                    'address' => $user['address'],
+                    'birth_date' => $user['birth_date']
+                ];
+                //$_SESSION['user'] = $user;
+                $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                $msg->success('Login successful');
+                header('Location: index.php');
+            } else {
+                $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                $msg->error('Account is not activated. Please check your email.');
+            }
+        } else {
+            $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+            $msg->error('Invalid email or password.');
+        }
+    } else {
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error('Invalid email format.');
+    }
+    
 
 
+}// userLogin
+public function checkIsUserLogedIn(){
+
+    session_start();
+    if (isset($_SESSION['user'])) {
+        return true;
+    } else {
+        return false;
+    }
+
+}// checkIsUserLogedIn
+
+public function userLogout(){
+    session_start();
+    session_destroy();
+    header('Location: login.php');
+}// userLogout
+
+public function passwordReset($email){
+
+    if ($this->validateEmailAddress($email)) {
+        $sql = 'SELECT * FROM users WHERE email = :email';
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(':email', $email);
+        $query->execute();
+        $user = $query->fetch();
+
+        if ($user) {
+            // Code to handle password reset process
+            $token = bin2hex(random_bytes(50));
+            $sql = 'UPDATE users SET reset_token = :token, reset_token_expiry = DATE_ADD(NOW(), INTERVAL 30 MINUTE) WHERE email = :email';
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(':token', $token);
+            $query->bindParam(':email', $email);
+            $query->execute();
+
+            // Send reset email
+            try {
+                $mail = new PHPMailer();
+                $mail->isSMTP();
+                $mail->Host = PHPMAILER_HOST;
+                $mail->SMTPAuth = true;
+                $mail->Port = PHPMAILER_PORT;
+                $mail->Username = PHPMAILER_USERNAME;
+                $mail->Password = PHPMAILER_PASSWORD;
+
+                $mail->setFrom(ADMIN_EMAIL, ADMIN_FIRST_NAME . ' ' . ADMIN_LAST_NAME);
+                $mail->addAddress($email);
+
+                $mail->isHTML(true);
+                $mail->Subject = 'Password Reset';
+                $mail->Body = 'Please click on <a href="http://localhost/zadaci/reset-password.php?token=' . $token . '">this link</a> to reset your password.';
+                $mail->AltBody = 'Please click on the following link to reset your password: http://localhost/zadaci/reset-password.php?token=' . $token;
+
+                $mail->send();
+                $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                $msg->success('Password reset email has been sent.');
+            } catch (Exception $e) {
+                $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                $msg->error('Password reset email could not be sent. ' . $mail->ErrorInfo);
+            }
+        } else {
+            $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+            $msg->error('Email does not exist.');
+        }
+    } else {
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error('Invalid email format.');
+    }
+    
+
+}// passwordReset
 
 
+public function resetPassword($email, $password, $passwordVerify, $token) {
+    if ( $this->validateEmailAddress($email)) {
+        if ( !$this->checkIfEmailExists($email)) {
+            if ($this->checkIfPasswordSame($password, $passwordVerify)) {
+                if ($this->checkIsPasswordStrong($password)) {
+                    $sql = 'SELECT * FROM users WHERE email = :email AND reset_token = :token AND reset_token_expiry > NOW()';
+                    $query = $this->connect()->prepare($sql);
+                    $query->bindParam(':email', $email);
+                    $query->bindParam(':token', $token);
+                    $query->execute();
+                    $user = $query->fetch();
 
+                    if ($user) {
+                        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                        $sql = 'UPDATE users SET password = :password, reset_token = NULL, reset_token_expiry = NULL WHERE email = :email';
+                        $query = $this->connect()->prepare($sql);
+                        $query->bindParam(':password', $hashedPassword);
+                        $query->bindParam(':email', $email);
+                        $query->execute();
 
+                        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                        $msg->success('Password has been reset successfully.');
+                    } else {
+                        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                        $msg->error('Invalid or expired token.');
+                    }
+                } else {
+                    $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                    $msg->error('Password is not strong enough.');
+                }
+            } else {
+                $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+                $msg->error('Passwords do not match.');
+            }
+        } else {
+            $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+            $msg->error('Email does not exist.');
+        }
+    } else {
+        $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+        $msg->error('Invalid email format.');
+    }
 
+    
 
+}// resetPassword
 
 
 

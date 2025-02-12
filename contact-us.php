@@ -23,7 +23,7 @@ try {
 <html lang="en">
   <head>
    <?php require_once 'partials/__head.inc.php'; ?>
-   <title>Home page | <?php  echo SITE_NAME; ?></title>
+   <title>Contac Us | <?php  echo SITE_NAME; ?></title>
   </head>
   <body>
 

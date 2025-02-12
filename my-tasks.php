@@ -3,7 +3,6 @@
 require_once 'include/config.inc.php';
 require_once 'include/db.inc.php';
 require_once 'include/classAutoloader.inc.php';
-
 try {
 
 
@@ -23,7 +22,7 @@ try {
 <html lang="en">
   <head>
    <?php require_once 'partials/__head.inc.php'; ?>
-   <title>Home page | <?php  echo SITE_NAME; ?></title>
+   <title>My Tasks | <?php  echo SITE_NAME; ?></title>
   </head>
   <body>
 

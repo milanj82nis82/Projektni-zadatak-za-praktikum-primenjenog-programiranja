@@ -60,6 +60,8 @@ CREATE TABLE `users` (
   `postal_code` varchar(10) NOT NULL,
   `address` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
+  `reset_token` varchar(255) NULL,
+  `reset_token_expiry` timestamp NOT NULL DEFAULT current_timestamp(),
   `birth_date` date NOT NULL,
   `is_active` int(11) DEFAULT 0,
   `role_id` int(11) DEFAULT 3,

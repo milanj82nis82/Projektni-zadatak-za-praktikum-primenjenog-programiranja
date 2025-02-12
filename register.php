@@ -5,11 +5,26 @@ require_once 'include/db.inc.php';
 require_once 'include/classAutoloader.inc.php';
 require_once 'include/phpSessionMessages/src/FlashMessages.php';
 $msg = new \Plasticbrain\FlashMessages\FlashMessages();
+use Include\DbConnect;
+use classes\User;
+try {
+/* check if user is already logged in */
+
+  if (isset($_SESSION['user'])) {
+    header("Location: my-account.php");
+    exit();
+  }
+
+
+} catch ( PDOException $e ){
+  echo $e -> getMessage();
+}
 ?>
 <!doctype html>
 <html lang="en">
   <head>
    <?php require_once 'partials/__head.inc.php'; ?>
+   <title>User Registration | <?php echo SITE_NAME; ?></title>
   </head>
   <body>
 
@@ -63,7 +78,7 @@ try {
   }// main isset
 
 
-
+$msg = new \Plasticbrain\FlashMessages\FlashMessages();
   $msg -> display();
 } catch ( PDOException $e ){
   echo $e -> getMessage();

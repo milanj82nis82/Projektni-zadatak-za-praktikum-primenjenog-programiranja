@@ -11,12 +11,10 @@
   <div class="container-fluid">
 
     <!-- Navbar brand -->
-    <a class="navbar-brand" href="#">Brand</a>
+    <a class="navbar-brand" href="#"><?php echo SITE_NAME; ?></a>
 
-    <!-- Toggle button -->
-    <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <i class="fas fa-bars"></i>
-    </button>
+
+    
 
     <!-- Collapsible wrapper -->
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -24,41 +22,116 @@
 
         <!-- Link -->
         <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
+          <a class="nav-link" href="index.php">Home</a>
+        </li>        
+        <li class="nav-item">
+          <a class="nav-link" href="all-tasks.php">Zadaci</a>
+        </li>        
+
+             
+        <li class="nav-item">
+          <a class="nav-link" href="about-us.php">About us</a>
+        </li>    
+
+        <li class="nav-item">
+          <a class="nav-link" href="contact-us.php">Contact us</a>
         </li>
 
         <!-- Dropdown -->
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-            Dropdown
+
+
+      </ul>
+
+ 
+      <ul  class="navbar-nav me-auto mb-2 mb-lg-0">
+      <?php
+try {
+ 
+  
+  if (isset($_SESSION['user'])) {
+   
+    
+    ?>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" 
+role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  Welcome back , <?php echo $_SESSION['user']['first_name'] . ' 
+  ' . $_SESSION['user']['last_name'] ?>
+</a>
+<!-- Dropdown menu -->
+<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+  <li>
+    <a class="dropdown-item" href="my-account.php">My account</a>
+  </li>
+  <li>
+    <a class="dropdown-item" href="my-tasks.php">My tasks</a>
+  </li>
+  <li>
+
+  <?php
+try {
+
+  if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['userLogout'])) {
+    
+    $user = new classes\User();
+    $user->userLogout();
+    header('Location: login.php');
+    exit();
+    
+
+  }// main isset
+
+
+}catch ( PDOException $e) {
+    echo "Connection failed: " . $e->getMessage();
+  }
+
+?>
+    <form action="" method="POST">
+      <button class="dropdown-item" type="submit" name="userLogout">Logout</button>
+    </form>
+  
+    
+  </li>
+</ul>
+</li>
+<?php
+
+
+
+  } else {
+?>
+
+<li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" 
+          role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Welcome back , Guest
           </a>
           <!-- Dropdown menu -->
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li>
-              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="login.php">Login</a>
             </li>
             <li>
-              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="register.php">Register</a>
             </li>
             <li>
-              <hr class="dropdown-divider" />
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">Something else here</a>
+              <a class="dropdown-item" href="password-reset.php">Password reset</a>
             </li>
           </ul>
         </li>
 
-      </ul>
+<?php
+}
 
-      <!-- Icons -->
-      <ul class="navbar-nav d-flex flex-row me-1">
-        <li class="nav-item me-3 me-lg-0">
-          <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i></a>
-        </li>
-        <li class="nav-item me-3 me-lg-0">
-          <a class="nav-link" href="#"><i class="fab fa-twitter"></i></a>
-        </li>
+
+
+
+
+}catch ( PDOException $e) {
+    echo "Connection failed: " . $e->getMessage();
+  } 
+?>
       </ul>
 
       <!-- Search -->

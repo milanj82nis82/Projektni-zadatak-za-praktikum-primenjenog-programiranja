@@ -25,7 +25,7 @@ try {
 <html lang="en">
   <head>
    <?php require_once 'partials/__head.inc.php'; ?>
-    <title>Password Reset | <?php echo SITE_NAME; ?></title>
+    <title>New token request | <?php echo SITE_NAME; ?></title>
   </head>
   <body>
 
